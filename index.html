@@ -16,6 +16,7 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      overflow: hidden;
     }
 
     h1 {
@@ -26,10 +27,11 @@
       width: 90%;
       max-width: 360px;
       height: 260px;
-      border-radius: 16px;
+      border-radius: 18px;
       object-fit: cover;
       background: #333;
       margin-bottom: 20px;
+      transition: transform 0.25s ease;
     }
 
     .buttons {
@@ -59,7 +61,6 @@
 
   <h1>SnapAngle</h1>
 
-  <!-- IMPORTANT -->
   <img id="photo" />
 
   <div class="buttons">
