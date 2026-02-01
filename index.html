@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SnapAngle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    #photo {
+      width: 90%;
+      max-width: 360px;
+      height: 260px;
+      border-radius: 16px;
+      object-fit: cover;
+      background: #333;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    button {
+      padding: 12px 22px;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+    }
+
+    #voteBtn {
+      background: #00e676;
+    }
+
+    #skipBtn {
+      background: #448aff;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>SnapAngle</h1>
+
+  <!-- IMPORTANT -->
+  <img id="photo" />
+
+  <div class="buttons">
+    <button id="voteBtn">Best Angle</button>
+    <button id="skipBtn">Next</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
