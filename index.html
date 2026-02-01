@@ -1,111 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>SnapAngle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    body {
-      margin: 0;
-      background: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    h1 {
-      margin-bottom: 4px;
-    }
-
-    #competitionTitle {
-      font-size: 16px;
-      opacity: 0.9;
-      margin-bottom: 8px;
-    }
-
-    #photo {
-      width: 90%;
-      max-width: 360px;
-      height: 260px;
-      border-radius: 18px;
-      object-fit: cover;
-      background: #333;
-      margin-bottom: 12px;
-      transition: transform 0.12s ease-out, box-shadow 0.3s ease;
-    }
-
-    .winner {
-      box-shadow: 0 0 30px #00e676;
-      animation: pulse 0.8s infinite alternate;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.05); }
-    }
-
-    .buttons {
-      display: flex;
-      gap: 15px;
-    }
-
-    button {
-      padding: 12px 22px;
-      font-size: 16px;
-      border: none;
-      border-radius: 12px;
-    }
-
-    #voteBtn { background: #00e676; }
-    #skipBtn { background: #448aff; color: white; }
-
-    #scoreboard {
-      margin-top: 6px;
-      font-size: 14px;
-      opacity: 0.9;
-    }
-
-    #feedback {
-      margin-top: 6px;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    #hint {
-      margin-top: 10px;
-      font-size: 12px;
-      opacity: 0.6;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <h1>SnapAngle</h1>
-  <div id="competitionTitle"></div>
+<h2 id="title">SnapAngle</h2>
 
+<div id="card">
   <img id="photo" />
+</div>
 
-  <div class="buttons">
-    <button id="voteBtn">Best Angle</button>
-    <button id="skipBtn">Next</button>
-  </div>
+<div class="buttons">
+  <button id="skipBtn">Next</button>
+  <button id="voteBtn">Best Angle</button>
+</div>
 
-  <div id="scoreboard"></div>
-  <div id="feedback"></div>
-  <div id="hint">⬅➡ vote • ⬆⬇ switch challenge</div>
+<p id="message"></p>
 
-  <!-- Firebase SDK -->
-  <script type="module" src="firebase.js"></script>
-
-  <!-- Main App Logic -->
-  <script type="module" src="app.js"></script>
-
+<script src="app.js"></script>
 </body>
 </html>

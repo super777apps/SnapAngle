@@ -1,48 +1,53 @@
 body {
+  margin: 0;
   font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: white;
   text-align: center;
-  background: #f8f8f8;
 }
 
-h1 {
-  margin-top: 10px;
-}
-
-.tagline {
-  color: #777;
+#title {
+  margin: 12px 0;
 }
 
 #card {
-  margin: 20px auto;
   width: 90%;
-  max-width: 400px;
-  background: white;
-  border-radius: 12px;
-  padding: 10px;
+  max-width: 380px;
+  height: 420px;
+  margin: auto;
+  overflow: hidden;
+  border-radius: 16px;
 }
 
 #photo {
   width: 100%;
-  border-radius: 10px;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .buttons {
-  margin-top: 15px;
+  margin-top: 12px;
 }
 
 button {
   padding: 12px 20px;
-  margin: 5px;
-  border: none;
-  border-radius: 20px;
+  margin: 6px;
   font-size: 16px;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 #voteBtn {
-  background: #ffd700;
+  background: #00e676;
 }
 
 #skipBtn {
-  background: #ddd;
+  background: #ff5252;
+}
+
+#message {
+  margin-top: 10px;
+  min-height: 20px;
 }
