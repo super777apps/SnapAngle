@@ -20,7 +20,13 @@
     }
 
     h1 {
-      margin-bottom: 10px;
+      margin-bottom: 4px;
+    }
+
+    #competitionTitle {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 8px;
     }
 
     #photo {
@@ -30,8 +36,18 @@
       border-radius: 18px;
       object-fit: cover;
       background: #333;
-      margin-bottom: 20px;
-      transition: transform 0.25s ease;
+      margin-bottom: 12px;
+      transition: transform 0.12s ease-out, box-shadow 0.3s ease;
+    }
+
+    .winner {
+      box-shadow: 0 0 30px #00e676;
+      animation: pulse 0.8s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
     }
 
     .buttons {
@@ -46,13 +62,25 @@
       border-radius: 12px;
     }
 
-    #voteBtn {
-      background: #00e676;
+    #voteBtn { background: #00e676; }
+    #skipBtn { background: #448aff; color: white; }
+
+    #scoreboard {
+      margin-top: 6px;
+      font-size: 14px;
+      opacity: 0.9;
     }
 
-    #skipBtn {
-      background: #448aff;
-      color: white;
+    #feedback {
+      margin-top: 6px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    #hint {
+      margin-top: 10px;
+      font-size: 12px;
+      opacity: 0.6;
     }
   </style>
 </head>
@@ -60,6 +88,7 @@
 <body>
 
   <h1>SnapAngle</h1>
+  <div id="competitionTitle"></div>
 
   <img id="photo" />
 
@@ -67,6 +96,10 @@
     <button id="voteBtn">Best Angle</button>
     <button id="skipBtn">Next</button>
   </div>
+
+  <div id="scoreboard"></div>
+  <div id="feedback"></div>
+  <div id="hint">⬅➡ vote • ⬆⬇ switch challenge</div>
 
   <script src="app.js"></script>
 </body>
