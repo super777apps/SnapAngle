@@ -1,23 +1,39 @@
-// Import Firebase modules (ES6)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+// 🔥 Firebase configuration
+firebase.initializeApp({
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID"
+});
 
-// 🔑 Replace these with your Firebase project credentials
-const firebaseConfig = {
-  apiKey: "AIzaSyC94z-nORMy9glnVPE_HXft65q4Et3gyCg",
-  authDomain: "snapangle.firebaseapp.com",
-  projectId: "snapangle",
-  storageBucket: "snapangle.appspot.com",
-  messagingSenderId: "997359239183",
-  appId: "1:997359239183:web:41b15057c5d7f0b561e37a"
-};
+// 🔐 Auth & DB
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+// 👤 Anonymous login
+auth.signInAnonymously()
+  .then(cred => {
+    window.currentUserId = cred.user.uid;
+    initUser(cred.user.uid);
+  })
+  .catch(err => {
+    console.error("Auth error", err);
+  });
 
-// Sign in anonymously
-signInAnonymously(auth)
-  .catch(err => console.error("Auth error:", err));
+// 🧠 Create user if not exists
+function initUser(uid) {
+  const ref = db.collection("users").doc(uid);
+
+  ref.get().then(doc => {
+    if (!doc.exists) {
+      ref.set({
+        username: "Player" + Math.floor(1000 + Math.random() * 9000),
+        totalWins: 0,
+        dailyWins: 0,
+        weeklyWins: 0,
+        monthlyWins: 0,
+        lastWinDate: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  });
+}
