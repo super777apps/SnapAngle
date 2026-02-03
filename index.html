@@ -3,20 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SnapAngle V29</title>
+<title>SnapAngle V31</title>
 <style>
 body{margin:0;background:#0b0b0b;color:#f5d37a;font-family:system-ui;overflow:hidden;}
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:10;}
 #overlay button{width:220px;padding:16px;border-radius:18px;border:none;font-weight:700;background:linear-gradient(145deg,#f5d37a,#c9a441);}
-#top{display:flex;justify-content:space-between;padding:10px 14px;}
-#imageBox{height:72vh;display:flex;align-items:center;justify-content:center;}
-#photo{width:90%;max-width:420px;max-height:100%;object-fit:contain;border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.8);}
+#top{display:flex;justify-content:space-between;padding:10px 14px;position:relative;z-index:5;}
+#imageBox{height:72vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+#photo{width:90%;max-width:420px;max-height:100%;object-fit:contain;border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.8);position:absolute;transition:transform 0.4s ease, opacity 0.4s ease, border 0.3s;}
 #dots{text-align:center;position:fixed;bottom:120px;width:100%;height:14px;z-index:5;}
 .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin:0 5px;background:rgba(255,255,255,.25);}
 .dot.active{background:#f5d37a;box-shadow:0 0 6px #f5d37a;}
-#controls{position:fixed;bottom:60px;width:100%;display:flex;justify-content:center;gap:12px;}
+#controls{position:fixed;bottom:60px;width:100%;display:flex;justify-content:center;gap:12px;z-index:5;}
 .ctrl{padding:14px 20px;border-radius:18px;border:none;font-weight:700;background:linear-gradient(145deg,#f5d37a,#c9a441);}
 #fileInput{display:none;}
+#soundBtn{position:fixed;top:14px;right:14px;padding:8px 14px;border-radius:12px;border:none;background:linear-gradient(145deg,#f5d37a,#c9a441);z-index:15;font-weight:700;}
+#message{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);padding:14px 20px;background:rgba(245,211,122,.9);color:#000;font-weight:700;font-size:18px;border-radius:12px;display:none;z-index:20;}
+.particle{position:absolute;width:18px;height:18px;border-radius:50%;pointer-events:none;animation:floatUp 1s ease-out forwards;}
+@keyframes floatUp{
+  0%{opacity:1;transform:translateY(0);}
+  100%{opacity:0;transform:translateY(-100px);}
+}
 </style>
 </head>
 <body>
@@ -31,6 +38,8 @@ body{margin:0;background:#0b0b0b;color:#f5d37a;font-family:system-ui;overflow:hi
   <div id="wallet">🟡 0 | 💎 0</div>
 </div>
 
+<button id="soundBtn">Enable Sound</button>
+
 <div id="imageBox">
   <img id="photo">
 </div>
@@ -43,6 +52,7 @@ body{margin:0;background:#0b0b0b;color:#f5d37a;font-family:system-ui;overflow:hi
 </div>
 
 <input type="file" id="fileInput" accept="image/*">
+<div id="message"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
