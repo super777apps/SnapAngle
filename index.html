@@ -1,28 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>SnapAngle</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnapAngle</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #0b0b0b;
+    color: #f5d37a;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+  }
+
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  #overlay button {
+    padding: 18px 28px;
+    font-size: 18px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(145deg, #f5d37a, #c9a441);
+    color: #111;
+    font-weight: 700;
+  }
+
+  #app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #player {
+    padding: 12px;
+    font-weight: 600;
+  }
+
+  #imageWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  #photo {
+    width: 90%;
+    max-width: 420px;
+    max-height: 75vh;
+    object-fit: contain;
+    border-radius: 22px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.85);
+  }
+
+  #dots {
+    margin-bottom: 110px;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    display: inline-block;
+    margin: 0 6px;
+  }
+
+  .dot.active {
+    background: #f5d37a;
+    box-shadow: 0 0 10px rgba(245,211,122,0.9);
+  }
+
+  #controls {
+    position: fixed;
+    bottom: 60px; /* MOVED UP */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    backdrop-filter: blur(10px);
+  }
+
+  button.ctrl {
+    background: linear-gradient(145deg, #f5d37a, #c9a441);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+    box-shadow: 0 6px 20px rgba(245,211,122,0.35);
+  }
+
+  button.ctrl:active {
+    transform: scale(0.95);
+  }
+</style>
 </head>
+
 <body>
 
-<h2 id="title">SnapAngle</h2>
-<div id="username"></div>
-
-<div id="card">
-  <img id="photo">
+<div id="overlay">
+  <button id="startBtn">▶ Tap to Start</button>
 </div>
 
-<div id="dots"></div>
+<div id="app">
+  <div id="player">Loading player…</div>
 
-<div class="buttons">
-  <button id="skipBtn">Next</button>
-  <button id="voteBtn">Best Angle</button>
+  <div id="imageWrapper">
+    <img id="photo">
+  </div>
+
+  <div id="dots"></div>
 </div>
 
-<p id="message"></p>
+<div id="controls">
+  <button class="ctrl" id="prevBtn">◀</button>
+  <button class="ctrl" id="bestBtn">★ Best</button>
+  <button class="ctrl" id="nextBtn">▶</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script src="app.js"></script>
 </body>

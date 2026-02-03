@@ -1,138 +1,85 @@
-// 🔊 Sounds
-const swipeX = new Audio("sounds/swipex.mp3");
-const swipeY = new Audio("sounds/swipey.mp3");
-const voteSound = new Audio("sounds/vote.mp3");
-const winSound = new Audio("sounds/win.mp3");
-const trySound = new Audio("sounds/try.mp3");
+// ---------- FIREBASE ----------
+firebase.initializeApp({
+  apiKey: "AIzaSyC94z-nORMy9glnVPE_HXft65q4Et3gyCg",
+  authDomain: "snapangle.firebaseapp.com",
+  projectId: "snapangle"
+});
 
-// 🧠 Competitions (still local URLs)
-const competitions = [
-  {
-    title: "Best Laptop Angle",
-    images: [
-      { url: "https://images.unsplash.com/photo-1593642532973-d31b6557fa68", v: 0 },
-      { url: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8", v: 0 },
-      { url: "https://images.unsplash.com/photo-1509395176047-4a66953fd231", v: 0 },
-      { url: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2", v: 0 },
-      { url: "https://images.unsplash.com/photo-1518770660439-4636190af475", v: 0 }
-    ]
-  },
-  {
-    title: "Best Sunset Shot",
-    images: [
-      { url: "https://images.unsplash.com/photo-1501973801540-537f08ccae7b", v: 0 },
-      { url: "https://images.unsplash.com/photo-1499346030926-9a72daac6c63", v: 0 },
-      { url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", v: 0 },
-      { url: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e", v: 0 },
-      { url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470", v: 0 }
-    ]
-  }
+firebase.auth().signInAnonymously().then(res => {
+  document.getElementById("player").innerText = "Player: " + res.user.uid;
+});
+
+// ---------- AUDIO ----------
+const sounds = {
+  swipeX: new Audio("swipex.mp3"),
+  swipeY: new Audio("swipey.mp3"),
+  click: new Audio("click.mp3"),
+  win: new Audio("win.mp3")
+};
+
+let audioReady = false;
+
+function unlockAudio() {
+  Object.values(sounds).forEach(s => {
+    s.muted = true;
+    s.play().then(() => {
+      s.pause();
+      s.currentTime = 0;
+      s.muted = false;
+    });
+  });
+  audioReady = true;
+}
+
+function play(s) {
+  if (!audioReady) return;
+  s.currentTime = 0;
+  s.play().catch(()=>{});
+}
+
+// ---------- DATA ----------
+const images = [
+  "https://images.unsplash.com/photo-1593642532973-d31b6557fa68?w=800",
+  "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800",
+  "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
+  "https://images.unsplash.com/photo-1527443154391-507e9dc6c5cc?w=800",
+  "https://images.unsplash.com/photo-1509395176047-4a66953fd231?w=800"
 ];
 
-let c = 0, i = 0;
+let index = 0;
 
 const photo = document.getElementById("photo");
-const title = document.getElementById("title");
 const dots = document.getElementById("dots");
-const msg = document.getElementById("message");
-const usernameDiv = document.getElementById("username");
 
-// 👤 Load user name from Firestore
-function loadUser() {
-  if (!window.currentUserId) return;
-
-  db.collection("users").doc(window.currentUserId)
-    .onSnapshot(doc => {
-      if (doc.exists) {
-        const u = doc.data();
-        usernameDiv.innerText = `${u.username} • Wins ${u.totalWins}`;
-      }
-    });
-}
-loadUser();
-
-// 📸 Render
 function render() {
-  title.innerText = competitions[c].title;
-  photo.style.opacity = 0;
-  setTimeout(() => {
-    photo.src = competitions[c].images[i].url;
-    photo.style.opacity = 1;
-  }, 80);
-
+  photo.src = images[index];
   dots.innerHTML = "";
-  competitions[c].images.forEach((_, idx) => {
-    const d = document.createElement("div");
-    d.className = "dot" + (idx === i ? " active" : "");
+  images.forEach((_, i) => {
+    const d = document.createElement("span");
+    d.className = "dot" + (i === index ? " active" : "");
     dots.appendChild(d);
   });
 }
-render();
 
-// 👉 Vote
-document.getElementById("voteBtn").onclick = () => {
-  voteSound.play();
-  competitions[c].images[i].v++;
-  nextImage();
-};
-
-// ❌ Skip
-document.getElementById("skipBtn").onclick = () => {
-  swipeX.play();
-  nextImage();
-};
-
-function nextImage() {
-  i++;
-  if (i >= competitions[c].images.length) finish();
-  else render();
+// ---------- NAV (NO SOUND HERE) ----------
+function next() {
+  index = (index + 1) % images.length;
+  render();
 }
 
-// 🏆 Finish
-function finish() {
-  const imgs = competitions[c].images;
-  const max = Math.max(...imgs.map(x => x.v));
-  const won = imgs[i - 1].v === max;
-
-  if (won) {
-    winSound.play();
-    msg.innerText = "🏆 You WIN!";
-    updateWins();
-  } else {
-    trySound.play();
-    msg.innerText = "😬 Very close!";
-  }
-
-  setTimeout(() => {
-    c = (c + 1) % competitions.length;
-    i = 0;
-    msg.innerText = "";
-    render();
-  }, 1200);
+function prev() {
+  index = (index - 1 + images.length) % images.length;
+  render();
 }
 
-// 🔥 Update wins in Firestore
-function updateWins() {
-  const ref = db.collection("users").doc(window.currentUserId);
-  const today = new Date().toDateString();
-
-  ref.get().then(doc => {
-    const d = doc.data();
-    const reset = d.lastWinDate !== today;
-
-    ref.update({
-      totalWins: firebase.firestore.FieldValue.increment(1),
-      dailyWins: reset ? 1 : firebase.firestore.FieldValue.increment(1),
-      weeklyWins: firebase.firestore.FieldValue.increment(1),
-      monthlyWins: firebase.firestore.FieldValue.increment(1),
-      lastWinDate: today
-    });
-  });
+function best() {
+  play(sounds.click);
+  play(sounds.win);
+  next();
 }
 
-// 👆 Swipe
-let sx, sy;
-
+// ---------- SWIPE (SOUND MOVED HERE) ----------
+let sx = 0, sy = 0;
 document.addEventListener("touchstart", e => {
   sx = e.touches[0].clientX;
   sy = e.touches[0].clientY;
@@ -142,18 +89,29 @@ document.addEventListener("touchend", e => {
   const dx = e.changedTouches[0].clientX - sx;
   const dy = e.changedTouches[0].clientY - sy;
 
-  if (Math.abs(dx) > Math.abs(dy)) {
-    swipeX.play();
-    photo.style.transform = `translateX(${dx}px)`;
-    setTimeout(() => {
-      photo.style.transform = "translateX(0)";
-      nextImage();
-    }, 60);
-  } else {
-    swipeY.play();
-    c = dy < 0 ? (c + 1) % competitions.length :
-                (c - 1 + competitions.length) % competitions.length;
-    i = 0;
-    render();
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+    play(sounds.swipeX);
+    dx < 0 ? next() : prev();
+  }
+
+  if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
+    play(sounds.swipeY);
   }
 });
+
+// ---------- START ----------
+document.getElementById("startBtn").onclick = () => {
+  unlockAudio();
+  document.getElementById("overlay").style.display = "none";
+  render();
+};
+
+document.getElementById("nextBtn").onclick = () => {
+  play(sounds.swipeX);
+  next();
+};
+document.getElementById("prevBtn").onclick = () => {
+  play(sounds.swipeX);
+  prev();
+};
+document.getElementById("bestBtn").onclick = best;
