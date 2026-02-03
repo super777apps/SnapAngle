@@ -5,9 +5,39 @@ firebase.initializeApp({
   projectId: "snapangle"
 });
 
-firebase.auth().signInAnonymously().then(res => {
-  document.getElementById("player").innerText = "Player: " + res.user.uid;
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let uid = null;
+let coins = 0;
+let diamonds = 0;
+
+// ---------- AUTH ----------
+auth.signInAnonymously().then(res => {
+  uid = res.user.uid;
+  document.getElementById("player").innerText = "Player";
+  initUser();
 });
+
+// ---------- USER DATA ----------
+function initUser() {
+  const ref = db.collection("users").doc(uid);
+
+  ref.get().then(doc => {
+    if (!doc.exists) {
+      ref.set({ coins: 0 });
+    } else {
+      coins = doc.data().coins || 0;
+    }
+    diamonds = Math.floor(coins / 10);
+    updateWallet();
+  });
+}
+
+function updateWallet() {
+  document.getElementById("wallet").innerText =
+    `🟡 ${coins} | 💎 ${diamonds}`;
+}
 
 // ---------- AUDIO ----------
 const sounds = {
@@ -18,7 +48,6 @@ const sounds = {
 };
 
 let audioReady = false;
-
 function unlockAudio() {
   Object.values(sounds).forEach(s => {
     s.muted = true;
@@ -30,7 +59,6 @@ function unlockAudio() {
   });
   audioReady = true;
 }
-
 function play(s) {
   if (!audioReady) return;
   s.currentTime = 0;
@@ -47,7 +75,6 @@ const images = [
 ];
 
 let index = 0;
-
 const photo = document.getElementById("photo");
 const dots = document.getElementById("dots");
 
@@ -61,30 +88,60 @@ function render() {
   });
 }
 
-// ---------- NAV (NO SOUND HERE) ----------
+// ---------- NAV ----------
 function next() {
   index = (index + 1) % images.length;
   render();
 }
-
 function prev() {
   index = (index - 1 + images.length) % images.length;
   render();
 }
 
+// ---------- WIN ----------
 function best() {
   play(sounds.click);
   play(sounds.win);
+
+  coins += 1;
+  diamonds = Math.floor(coins / 10);
+
+  db.collection("users").doc(uid).set({ coins });
+
+  updateWallet();
   next();
 }
 
-// ---------- SWIPE (SOUND MOVED HERE) ----------
+// ---------- UPLOAD ----------
+document.getElementById("uploadBtn").onclick = () => {
+  if (diamonds < 1) {
+    alert("❌ Not enough diamonds");
+    return;
+  }
+
+  // spend ONE diamond by lowering coins threshold
+  coins -= 10;
+  diamonds = Math.floor(coins / 10);
+
+  db.collection("users").doc(uid).set({ coins });
+
+  updateWallet();
+
+  db.collection("competitions").add({
+    uid,
+    imageUrl: images[index],
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  alert("✅ Competition uploaded");
+};
+
+// ---------- SWIPE ----------
 let sx = 0, sy = 0;
 document.addEventListener("touchstart", e => {
   sx = e.touches[0].clientX;
   sy = e.touches[0].clientY;
 });
-
 document.addEventListener("touchend", e => {
   const dx = e.changedTouches[0].clientX - sx;
   const dy = e.changedTouches[0].clientY - sy;
@@ -93,7 +150,6 @@ document.addEventListener("touchend", e => {
     play(sounds.swipeX);
     dx < 0 ? next() : prev();
   }
-
   if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
     play(sounds.swipeY);
   }
