@@ -3,35 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SnapAngle V31</title>
+<title>SnapAngle V45</title>
+
 <style>
-body{margin:0;background:#0b0b0b;color:#f5d37a;font-family:system-ui;overflow:hidden;}
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:10;}
-#overlay button{width:220px;padding:16px;border-radius:18px;border:none;font-weight:700;background:linear-gradient(145deg,#f5d37a,#c9a441);}
-#top{display:flex;justify-content:space-between;padding:10px 14px;position:relative;z-index:5;}
-#imageBox{height:72vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-#photo{width:90%;max-width:420px;max-height:100%;object-fit:contain;border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.8);position:absolute;transition:transform 0.4s ease, opacity 0.4s ease, border 0.3s;}
-#dots{text-align:center;position:fixed;bottom:120px;width:100%;height:14px;z-index:5;}
-.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin:0 5px;background:rgba(255,255,255,.25);}
-.dot.active{background:#f5d37a;box-shadow:0 0 6px #f5d37a;}
-#controls{position:fixed;bottom:60px;width:100%;display:flex;justify-content:center;gap:12px;z-index:5;}
-.ctrl{padding:14px 20px;border-radius:18px;border:none;font-weight:700;background:linear-gradient(145deg,#f5d37a,#c9a441);}
-#fileInput{display:none;}
-#soundBtn{position:fixed;top:14px;right:14px;padding:8px 14px;border-radius:12px;border:none;background:linear-gradient(145deg,#f5d37a,#c9a441);z-index:15;font-weight:700;}
-#message{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);padding:14px 20px;background:rgba(245,211,122,.9);color:#000;font-weight:700;font-size:18px;border-radius:12px;display:none;z-index:20;}
-.particle{position:absolute;width:18px;height:18px;border-radius:50%;pointer-events:none;animation:floatUp 1s ease-out forwards;}
-@keyframes floatUp{
-  0%{opacity:1;transform:translateY(0);}
-  100%{opacity:0;transform:translateY(-100px);}
+body{
+  margin:0;
+  background:#0b0b0b;
+  color:#f5d37a;
+  font-family:system-ui;
+  overflow:hidden;
+}
+
+/* TOP BAR */
+#top{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 16px;
+  z-index:5;
+}
+
+/* IMAGE AREA */
+#imageBox{
+  height:72vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+
+#photo{
+  width:90%;
+  max-width:420px;
+  max-height:100%;
+  object-fit:contain;
+  border-radius:22px;
+  box-shadow:0 18px 36px rgba(0,0,0,.8);
+  position:absolute;
+  will-change:transform;
+}
+
+/* DOTS */
+#dots{
+  position:fixed;
+  bottom:150px;
+  width:100%;
+  text-align:center;
+  z-index:4;
+}
+
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  display:inline-block;
+  margin:0 4px;
+  background:rgba(255,255,255,.25);
+}
+.dot.active{
+  background:#f5d37a;
+  box-shadow:0 0 6px #f5d37a;
+}
+
+/* CONTROLS */
+#controls{
+  position:fixed;
+  bottom:70px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  z-index:5;
+}
+
+.ctrl{
+  padding:12px 18px;
+  border:none;
+  border-radius:18px;
+  font-weight:700;
+  background:linear-gradient(145deg,#f5d37a,#c9a441);
+  cursor:pointer;
+}
+
+#bestBtn{
+  padding:16px 26px;
+  font-size:16px;
+}
+
+/* SOUND */
+#soundBtn{
+  position:fixed;
+  top:14px;
+  right:14px;
+  padding:8px 14px;
+  border-radius:12px;
+  border:none;
+  font-weight:700;
+  background:linear-gradient(145deg,#f5d37a,#c9a441);
+  z-index:10;
+}
+
+/* LOGIN OVERLAY */
+#loginOverlay{
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(11,11,11,0.9);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  z-index:20;
+}
+
+.loginBtn{
+  padding:14px 28px;
+  border:none;
+  border-radius:18px;
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+  background:linear-gradient(145deg,#f5d37a,#c9a441);
+}
+
+/* MODALS */
+.modal{
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:25;
+  gap:12px;
+}
+
+.modal input[type=text]{
+  padding:10px;
+  border-radius:12px;
+  border:none;
+  width:70%;
+  font-size:16px;
+}
+
+.modal button{
+  padding:10px 16px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(145deg,#f5d37a,#c9a441);
+  font-weight:700;
+  cursor:pointer;
 }
 </style>
 </head>
-<body>
 
-<div id="overlay">
-  <button id="googleBtn">Continue with Google</button>
-  <button id="guestBtn">Continue as Guest</button>
-</div>
+<body>
 
 <div id="top">
   <div id="player">Player</div>
@@ -47,12 +176,31 @@ body{margin:0;background:#0b0b0b;color:#f5d37a;font-family:system-ui;overflow:hi
 <div id="dots"></div>
 
 <div id="controls">
+  <button class="ctrl" id="streakBtn">🔥 Streak</button>
   <button class="ctrl" id="bestBtn">★ Best Angle</button>
-  <button class="ctrl" id="uploadBtn">⬆ Upload Competition</button>
+  <button class="ctrl" id="uploadBtn">⬆ Upload</button>
 </div>
 
-<input type="file" id="fileInput" accept="image/*">
-<div id="message"></div>
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay">
+  <button class="loginBtn" id="guestLogin">Continue as Guest</button>
+  <button class="loginBtn" id="googleLogin">Sign in with Google</button>
+</div>
+
+<!-- STREAK MODAL -->
+<div class="modal" id="streakModal">
+  <input type="text" id="streakMsg" placeholder="Optional message...">
+  <button id="sendStreak">Send Streak</button>
+  <button id="cancelStreak">Cancel</button>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="modal" id="uploadModal">
+  <input type="text" id="uploadTitle" placeholder="Optional title">
+  <input type="file" id="uploadImages" accept="image/*" multiple>
+  <button id="confirmUpload">Upload Competition</button>
+  <button id="cancelUpload">Cancel</button>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
