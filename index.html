@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SnapAngle V45</title>
+<title>SnapAngle</title>
 
 <style>
 body{
@@ -14,22 +14,61 @@ body{
   overflow:hidden;
 }
 
-/* TOP BAR */
+button{cursor:pointer}
+
+#loginOverlay,
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+}
+
+.hidden{display:none}
+
+.box{
+  background:#111;
+  padding:22px;
+  border-radius:22px;
+  width:280px;
+  text-align:center;
+}
+
+.box h3{margin-top:0}
+
+.btn{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:none;
+  border-radius:16px;
+  font-weight:700;
+  background:linear-gradient(145deg,#f5d37a,#c9a441);
+}
+
+input, textarea{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  border:none;
+  margin-top:10px;
+}
+
 #top{
   display:flex;
   justify-content:space-between;
-  padding:10px 16px;
-  z-index:5;
+  padding:10px 14px;
 }
 
-/* IMAGE AREA */
 #imageBox{
   height:72vh;
   display:flex;
   align-items:center;
   justify-content:center;
-  position:relative;
-  overflow:hidden;
 }
 
 #photo{
@@ -38,23 +77,17 @@ body{
   max-height:100%;
   object-fit:contain;
   border-radius:22px;
-  box-shadow:0 18px 36px rgba(0,0,0,.8);
-  position:absolute;
-  will-change:transform;
 }
 
-/* DOTS */
 #dots{
   position:fixed;
-  bottom:150px;
+  bottom:140px;
   width:100%;
   text-align:center;
-  z-index:4;
 }
 
 .dot{
-  width:10px;
-  height:10px;
+  width:10px;height:10px;
   border-radius:50%;
   display:inline-block;
   margin:0 4px;
@@ -62,18 +95,15 @@ body{
 }
 .dot.active{
   background:#f5d37a;
-  box-shadow:0 0 6px #f5d37a;
 }
 
-/* CONTROLS */
 #controls{
   position:fixed;
-  bottom:70px;
+  bottom:60px;
   width:100%;
   display:flex;
   justify-content:center;
-  gap:12px;
-  z-index:5;
+  gap:10px;
 }
 
 .ctrl{
@@ -82,7 +112,6 @@ body{
   border-radius:18px;
   font-weight:700;
   background:linear-gradient(145deg,#f5d37a,#c9a441);
-  cursor:pointer;
 }
 
 #bestBtn{
@@ -90,80 +119,53 @@ body{
   font-size:16px;
 }
 
-/* SOUND */
 #soundBtn{
   position:fixed;
-  top:14px;
-  right:14px;
+  top:14px; right:14px;
   padding:8px 14px;
-  border-radius:12px;
-  border:none;
-  font-weight:700;
-  background:linear-gradient(145deg,#f5d37a,#c9a441);
-  z-index:10;
-}
-
-/* LOGIN OVERLAY */
-#loginOverlay{
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(11,11,11,0.9);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:16px;
-  z-index:20;
-}
-
-.loginBtn{
-  padding:14px 28px;
-  border:none;
-  border-radius:18px;
-  font-weight:700;
-  font-size:16px;
-  cursor:pointer;
-  background:linear-gradient(145deg,#f5d37a,#c9a441);
-}
-
-/* MODALS */
-.modal{
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.85);
-  display:none;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:25;
-  gap:12px;
-}
-
-.modal input[type=text]{
-  padding:10px;
-  border-radius:12px;
-  border:none;
-  width:70%;
-  font-size:16px;
-}
-
-.modal button{
-  padding:10px 16px;
   border:none;
   border-radius:12px;
-  background:linear-gradient(145deg,#f5d37a,#c9a441);
   font-weight:700;
-  cursor:pointer;
+  background:linear-gradient(145deg,#f5d37a,#c9a441);
 }
 </style>
 </head>
 
 <body>
 
+<!-- LOGIN -->
+<div id="loginOverlay">
+  <div class="box">
+    <h3>Welcome</h3>
+    <button class="btn" id="googleLogin">Sign in with Google</button>
+    <button class="btn" id="guestLogin">Continue as Guest</button>
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div id="uploadModal" class="modal hidden">
+  <div class="box">
+    <h3>Upload Competition</h3>
+    <input placeholder="Title (optional)">
+    <p>Minimum 5 photos required</p>
+    <input type="file" multiple accept="image/*">
+    <button class="btn" id="closeUpload">Cancel</button>
+  </div>
+</div>
+
+<!-- STREAK MODAL -->
+<div id="streakModal" class="modal hidden">
+  <div class="box">
+    <h3>Send Streak</h3>
+    <p>Using current image</p>
+    <textarea placeholder="Optional message"></textarea>
+    <button class="btn">Send</button>
+    <button class="btn" id="closeStreak">Cancel</button>
+  </div>
+</div>
+
 <div id="top">
-  <div id="player">Player</div>
+  <div id="player">Guest</div>
   <div id="wallet">🟡 0 | 💎 0</div>
 </div>
 
@@ -176,36 +178,14 @@ body{
 <div id="dots"></div>
 
 <div id="controls">
-  <button class="ctrl" id="streakBtn">🔥 Streak</button>
-  <button class="ctrl" id="bestBtn">★ Best Angle</button>
   <button class="ctrl" id="uploadBtn">⬆ Upload</button>
-</div>
-
-<!-- LOGIN OVERLAY -->
-<div id="loginOverlay">
-  <button class="loginBtn" id="guestLogin">Continue as Guest</button>
-  <button class="loginBtn" id="googleLogin">Sign in with Google</button>
-</div>
-
-<!-- STREAK MODAL -->
-<div class="modal" id="streakModal">
-  <input type="text" id="streakMsg" placeholder="Optional message...">
-  <button id="sendStreak">Send Streak</button>
-  <button id="cancelStreak">Cancel</button>
-</div>
-
-<!-- UPLOAD MODAL -->
-<div class="modal" id="uploadModal">
-  <input type="text" id="uploadTitle" placeholder="Optional title">
-  <input type="file" id="uploadImages" accept="image/*" multiple>
-  <button id="confirmUpload">Upload Competition</button>
-  <button id="cancelUpload">Cancel</button>
+  <button class="ctrl" id="bestBtn">★ Best Angle</button>
+  <button class="ctrl" id="streakBtn">🔥 Streak</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
