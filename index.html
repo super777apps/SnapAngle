@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SnapAngle</title>
+<title>SnapAngle V53</title>
 
 <style>
 body{
@@ -14,50 +14,6 @@ body{
   overflow:hidden;
 }
 
-button{cursor:pointer}
-
-#loginOverlay,
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.75);
-  backdrop-filter:blur(6px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:50;
-}
-
-.hidden{display:none}
-
-.box{
-  background:#111;
-  padding:22px;
-  border-radius:22px;
-  width:280px;
-  text-align:center;
-}
-
-.box h3{margin-top:0}
-
-.btn{
-  width:100%;
-  padding:14px;
-  margin-top:12px;
-  border:none;
-  border-radius:16px;
-  font-weight:700;
-  background:linear-gradient(145deg,#f5d37a,#c9a441);
-}
-
-input, textarea{
-  width:100%;
-  padding:10px;
-  border-radius:12px;
-  border:none;
-  margin-top:10px;
-}
-
 #top{
   display:flex;
   justify-content:space-between;
@@ -65,10 +21,11 @@ input, textarea{
 }
 
 #imageBox{
-  height:72vh;
+  height:70vh;
   display:flex;
   align-items:center;
   justify-content:center;
+  position:relative;
 }
 
 #photo{
@@ -81,7 +38,7 @@ input, textarea{
 
 #dots{
   position:fixed;
-  bottom:140px;
+  bottom:135px;
   width:100%;
   text-align:center;
 }
@@ -95,6 +52,7 @@ input, textarea{
 }
 .dot.active{
   background:#f5d37a;
+  box-shadow:0 0 6px #f5d37a;
 }
 
 #controls{
@@ -109,60 +67,124 @@ input, textarea{
 .ctrl{
   padding:12px 18px;
   border:none;
-  border-radius:18px;
+  border-radius:16px;
   font-weight:700;
   background:linear-gradient(145deg,#f5d37a,#c9a441);
 }
 
 #bestBtn{
-  padding:16px 26px;
+  padding:14px 30px;
   font-size:16px;
 }
 
-#soundBtn{
+##soundBtn{
   position:fixed;
-  top:14px; right:14px;
-  padding:8px 14px;
-  border:none;
+  top:100px;     /* a bit lower so it doesn’t hide behind uploader info */
+  left:14px;     /* move to the left side */
+  padding:8px 12px;
   border-radius:12px;
+  border:none;
+  display:none;
+}
+
+#uploadScreen, #streakScreen{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:16px;
+  background-size:cover;
+  background-position:center;
+}
+
+.panel{
+  background:#111;
+  border-radius:16px;
+  padding:14px;
+}
+
+.panelBtns{
+  display:flex;
+  gap:10px;
+}
+
+.panelBtns button{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:14px;
   font-weight:700;
   background:linear-gradient(145deg,#f5d37a,#c9a441);
+}
+
+#myUploads{
+  margin-top:12px;
+  max-height:50vh;
+  overflow:auto;
+}
+
+.myItem img{
+  width:100%;
+  border-radius:10px;
+  margin-bottom:8px;
+}
+
+select, textarea{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  border:none;
+  margin-top:10px;
+}
+
+#loginOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(5px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+#loginBox{
+  background:#111;
+  padding:26px;
+  border-radius:18px;
+  text-align:center;
+  width:85%;
+  max-width:320px;
+}
+
+.loginBtn{
+  width:100%;
+  padding:14px;
+  margin-top:14px;
+  border:none;
+  border-radius:14px;
+  font-weight:700;
+  background:linear-gradient(145deg,#f5d37a,#c9a441);
+}
+
+#msgBox{
+  position:fixed;
+  top:45%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  padding:14px 22px;
+  border-radius:16px;
+  background:linear-gradient(145deg,#f5d37a,#c9a441);
+  color:#000;
+  font-weight:700;
+  display:none;
+  z-index:10;
 }
 </style>
 </head>
 
 <body>
-
-<!-- LOGIN -->
-<div id="loginOverlay">
-  <div class="box">
-    <h3>Welcome</h3>
-    <button class="btn" id="googleLogin">Sign in with Google</button>
-    <button class="btn" id="guestLogin">Continue as Guest</button>
-  </div>
-</div>
-
-<!-- UPLOAD MODAL -->
-<div id="uploadModal" class="modal hidden">
-  <div class="box">
-    <h3>Upload Competition</h3>
-    <input placeholder="Title (optional)">
-    <p>Minimum 5 photos required</p>
-    <input type="file" multiple accept="image/*">
-    <button class="btn" id="closeUpload">Cancel</button>
-  </div>
-</div>
-
-<!-- STREAK MODAL -->
-<div id="streakModal" class="modal hidden">
-  <div class="box">
-    <h3>Send Streak</h3>
-    <p>Using current image</p>
-    <textarea placeholder="Optional message"></textarea>
-    <button class="btn">Send</button>
-    <button class="btn" id="closeStreak">Cancel</button>
-  </div>
-</div>
 
 <div id="top">
   <div id="player">Guest</div>
@@ -183,9 +205,50 @@ input, textarea{
   <button class="ctrl" id="streakBtn">🔥 Streak</button>
 </div>
 
+<input type="file" id="uploadInput" multiple accept="image/*" style="display:none">
+
+<!-- Upload Screen -->
+<div id="uploadScreen">
+  <div class="panel">
+    <div class="panelBtns">
+      <button id="selectImages">Select Images</button>
+      <button id="closeUpload">Close</button>
+    </div>
+    <div id="myUploads"></div>
+  </div>
+</div>
+
+<!-- Streak Screen -->
+<div id="streakScreen">
+  <div class="panel">
+    <select id="friendSelect">
+      <option>Alex</option>
+      <option>Sam</option>
+      <option>Emma</option>
+      <option>John</option>
+    </select>
+    <textarea id="streakMsg" placeholder="Optional message..."></textarea>
+    <div class="panelBtns">
+      <button id="sendStreak">Send</button>
+      <button id="closeStreak">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="loginOverlay">
+  <div id="loginBox">
+    <h2>SnapAngle</h2>
+    <button class="loginBtn" id="guestLogin">Continue as Guest</button>
+    <button class="loginBtn" id="googleLogin">Continue with Google</button>
+  </div>
+</div>
+
+<div id="msgBox"></div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="app.js"></script>
+
 </body>
 </html>
