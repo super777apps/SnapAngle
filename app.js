@@ -36,12 +36,16 @@ let coins=0, diamonds=0;
 let userId=null;
 
 const clickSound=new Audio("click.mp3");
-const winSound=new Audio("win.mp3");
+const winSound=new Audio("win.mp3");  // for diamond +1
 const trySound=new Audio("try.mp3");
 const swipeX=new Audio("swipex.mp3");
 const swipeY=new Audio("swipey.mp3");
+const swipesSound=new Audio("swipes.mp3"); // new swipe left/right sound
 
 let audioReady=false;
+
+/* -------- VOTE LIMIT TRACKER -------- */
+let voteTracker = {}; // voteTracker[compIndex] = { count: 0, lastTime: 0 }
 
 soundBtn.onclick=()=>{
   audioReady=true;
@@ -126,7 +130,6 @@ function render(){
 
   photo.src = imgs[angleIndex];
 
-  // dots
   dots.innerHTML="";
   imgs.forEach((_,i)=>{
     const d=document.createElement("span");
@@ -134,7 +137,6 @@ function render(){
     dots.appendChild(d);
   });
 
-  // update info overlay
   comp.views++;
   imageInfo.innerHTML = `
     <div>Uploader: ${comp.uploader}</div>
@@ -143,23 +145,46 @@ function render(){
   `;
 }
 
-/* ---------- BEST ANGLE ---------- */
+/* ---------- BEST ANGLE (ANTI-SPAM ADDED) ---------- */
 bestBtn.onclick=()=>{
   const comp = competitions[compIndex];
+  const maxVotes = comp.images.length;
+
+  if(!voteTracker[compIndex]){
+    voteTracker[compIndex] = { count: 0, lastTime: 0 };
+  }
+
+  const now = Date.now();
+  const tracker = voteTracker[compIndex];
+
+  if(tracker.count >= maxVotes){
+    if(now - tracker.lastTime < 3600000){
+      showMessage("Please vote this competition after 1 hour or vote next competition");
+      return;
+    } else {
+      tracker.count = 0;
+    }
+  }
+
+  tracker.count++;
+  tracker.lastTime = now;
+
   comp.angleCounts[angleIndex]++;
+
   if(angleIndex===comp.best){
     coins++;
     audioReady && clickSound.play();
     showMessage("+1 Coin");
     if(coins%10===0){
       diamonds++;
-      audioReady && winSound.play();
+      audioReady && winSound.play(); // NEW: play win sound when diamond +1
       showMessage("💎 Diamond Earned!");
     }
   } else {
     audioReady && trySound.play();
     showMessage("Very close! Try again");
   }
+
   updateWallet();
   render();
 };
@@ -238,7 +263,7 @@ document.addEventListener("touchend",e=>{
   if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>60){
     const imgs=competitions[compIndex].images;
     angleIndex=(angleIndex+(dx<0?1:-1)+imgs.length)%imgs.length;
-    audioReady && swipeX.play();
+    audioReady && swipesSound.play(); // NEW: play swipes.mp3 for left/right
     render();
   }
   else if(Math.abs(dy)>60){
