@@ -3,83 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SnapAngle V53</title>
+<title>SnapAngle V63</title>
+
 <style>
-body{
-  margin:0;
-  background:#0b0b0b;
-  color:#f5d37a;
-  font-family:system-ui;
-  overflow:hidden;
-}
-#top{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 14px;
-}
-#imageBox{
-  height:70vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-}
+body{margin:0;background:#0b0b0b;color:#f5d37a;font-family:system-ui;overflow:hidden;}
+
+#top{display:flex;justify-content:space-between;padding:10px 14px;}
+
+#imageBox{height:70vh;display:flex;align-items:center;justify-content:center;position:relative;}
+
 #photo{
   width:90%;
   max-width:420px;
   max-height:100%;
   object-fit:contain;
   border-radius:22px;
+  transition:border .2s ease;
 }
+
 #dots{
   position:fixed;
-  bottom:135px;
+  bottom:125px;
   width:100%;
   text-align:center;
 }
+
 .dot{
-  width:10px;height:10px;
+  width:9px;
+  height:9px;
   border-radius:50%;
   display:inline-block;
-  margin:0 4px;
+  margin:0 3px;
   background:rgba(255,255,255,.25);
 }
+
 .dot.active{
   background:#f5d37a;
   box-shadow:0 0 6px #f5d37a;
 }
+
 #controls{
   position:fixed;
-  bottom:60px;
+  bottom:55px;
   width:100%;
   display:flex;
   justify-content:center;
-  gap:10px;
+  gap:8px;
 }
+
+/* BUTTON SIZE CONTROL */
+
 .ctrl{
-  padding:12px 18px;
   border:none;
-  border-radius:16px;
+  border-radius:14px;
   font-weight:700;
   background:linear-gradient(145deg,#f5d37a,#c9a441);
+  cursor:pointer;
+  transition:all .15s ease;
+  padding:8px 14px;
+  font-size:13px;
 }
+
 #bestBtn{
-  padding:14px 30px;
-  font-size:16px;
+  padding:12px 26px;
+  font-size:15px;
 }
+
+.ctrl:active{
+  transform:scale(.93);
+}
+
+/* SOUND BUTTON */
 #soundBtn{
   position:fixed;
-  top:100px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:14px 28px;
-  border-radius:14px;
+  top:65px;
+  left:14px;
+  padding:6px 10px;
+  border-radius:10px;
   border:none;
   font-weight:700;
   background:linear-gradient(145deg,#f5d37a,#c9a441);
-  z-index:100;
+  z-index:999;
 }
-#uploadScreen, #streakScreen{
+
+#uploadScreen,#streakScreen,#capsuleScreen{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,.9);
@@ -87,53 +94,45 @@ body{
   flex-direction:column;
   justify-content:flex-end;
   padding:16px;
-  background-size:cover;
-  background-position:center;
 }
+
 .panel{
   background:#111;
   border-radius:16px;
   padding:14px;
 }
+
 .panelBtns{
   display:flex;
   gap:10px;
 }
+
 .panelBtns button{
   flex:1;
-  padding:12px;
+  padding:10px;
   border:none;
-  border-radius:14px;
+  border-radius:12px;
   font-weight:700;
   background:linear-gradient(145deg,#f5d37a,#c9a441);
 }
-#myUploads{
-  margin-top:12px;
-  max-height:50vh;
-  overflow:auto;
-}
-.myItem img{
-  width:100%;
-  border-radius:10px;
-  margin-bottom:8px;
-}
-select, textarea{
+
+select,textarea,input{
   width:100%;
   padding:10px;
   border-radius:12px;
   border:none;
   margin-top:10px;
 }
+
 #loginOverlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.75);
-  backdrop-filter:blur(5px);
+  background:rgba(0,0,0,.8);
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index:200;
 }
+
 #loginBox{
   background:#111;
   padding:26px;
@@ -142,21 +141,23 @@ select, textarea{
   width:85%;
   max-width:320px;
 }
+
 .loginBtn{
   width:100%;
-  padding:14px;
+  padding:12px;
   margin-top:14px;
   border:none;
   border-radius:14px;
   font-weight:700;
   background:linear-gradient(145deg,#f5d37a,#c9a441);
 }
+
 #msgBox{
   position:fixed;
   top:45%;
   left:50%;
   transform:translate(-50%,-50%);
-  padding:14px 22px;
+  padding:12px 20px;
   border-radius:16px;
   background:linear-gradient(145deg,#f5d37a,#c9a441);
   color:#000;
@@ -164,8 +165,19 @@ select, textarea{
   display:none;
   z-index:10;
 }
+
+.blink-border{
+  animation:blinkBorder 1s ease-in-out;
+}
+
+@keyframes blinkBorder{
+  0%,100%{border:4px solid gold;}
+  50%{border:4px solid transparent;}
+}
+
 </style>
 </head>
+
 <body>
 
 <div id="top">
@@ -177,6 +189,7 @@ select, textarea{
 
 <div id="imageBox">
   <img id="photo">
+  <div id="imageInfo" style="position:absolute;top:10px;right:10px;padding:6px 10px;border-radius:12px;background:rgba(0,0,0,0.6);color:#f5d37a;font-size:12px;font-weight:700;"></div>
 </div>
 
 <div id="dots"></div>
@@ -185,38 +198,52 @@ select, textarea{
   <button class="ctrl" id="uploadBtn">⬆ Upload</button>
   <button class="ctrl" id="bestBtn">★ Best Angle</button>
   <button class="ctrl" id="streakBtn">🔥 Streak</button>
+  <button class="ctrl" id="capsuleBtn">📦 Capsule</button>
 </div>
 
 <input type="file" id="uploadInput" multiple accept="image/*" style="display:none">
 
-<!-- Upload Screen -->
-<div id="uploadScreen">
-  <div class="panel">
-    <div class="panelBtns">
-      <button id="selectImages">Select Images</button>
-      <button id="closeUpload">Close</button>
-    </div>
-    <div id="myUploads"></div>
-  </div>
-</div>
-
-<!-- Streak Screen -->
+<!-- STREAK -->
 <div id="streakScreen">
   <div class="panel">
-    <select id="friendSelect">
-      <option>Alex</option>
-      <option>Sam</option>
-      <option>Emma</option>
-      <option>John</option>
+    <select id="friendSelect"></select>
+    <textarea id="streakMsg" placeholder="Write secret message..."></textarea>
+
+    <select id="lockPreset">
+      <option value="60000">Unlock in 1 minute</option>
+      <option value="600000">Unlock in 10 minutes</option>
+      <option value="3600000">Unlock in 1 hour</option>
+      <option value="86400000">Unlock in 24 hours</option>
+      <option value="custom">Pick date & time</option>
     </select>
-    <textarea id="streakMsg" placeholder="Optional message..."></textarea>
+
+    <input type="datetime-local" id="customTime" style="display:none">
+
     <div class="panelBtns">
       <button id="sendStreak">Send</button>
       <button id="closeStreak">Close</button>
     </div>
+
+    <div id="myStreaks"></div>
   </div>
 </div>
 
+<!-- CAPSULE -->
+<div id="capsuleScreen">
+  <div class="panel">
+    <textarea id="capsuleMsg" placeholder="Write message to your future self..."></textarea>
+    <input type="datetime-local" id="capsuleTime">
+
+    <div class="panelBtns">
+      <button id="saveCapsule">Save Capsule</button>
+      <button id="closeCapsule">Close</button>
+    </div>
+
+    <div id="capsuleList"></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
 <div id="loginOverlay">
   <div id="loginBox">
     <h2>SnapAngle</h2>
@@ -230,6 +257,7 @@ select, textarea{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
 <script src="app.js"></script>
 </body>
 </html>
