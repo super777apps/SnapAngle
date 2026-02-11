@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="manifest" href="/SnapAngle/manifest.json">
+<!-- HEAD -->
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#f5d37a">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -261,9 +262,12 @@ select,textarea,input{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script src="app.js"></script>
+<!-- BODY (before </body>) -->
 <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/SnapAngle/service-worker.js", { scope: "/SnapAngle/" });
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(()=>console.log("Service Worker registered"))
+    .catch(err=>console.log("SW registration failed:", err));
 }
 </script>
 </body>
