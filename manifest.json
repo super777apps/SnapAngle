@@ -1,13 +1,12 @@
-
 {
   "name": "SnapAngle",
   "short_name": "SnapAngle",
-  "start_url": "/SnapAngle/",
-  "scope": "/SnapAngle/",
+  "description": "Best Angle Photo Battle App",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0b0b0b",
   "theme_color": "#f5d37a",
-  "description": "Best Angle Photo Battle App",
   "orientation": "portrait",
   "icons": [
     {
