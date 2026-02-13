@@ -76,13 +76,31 @@ googleLogin.onclick=async()=>{
 };
 
 async function afterLogin(user){
-  userId=user.uid;
+
+  userId = user.uid;
+
+  const username = user.displayName || "Guest-" + user.uid.slice(0,5);
+
+  console.log("LOGIN:", userId, username);
+
+  // FORCE USER CREATE
+  await db.collection("users").doc(userId).set({
+    name: username,
+    createdAt: Date.now(),
+    coins: 0,
+    diamonds: 0
+  }, { merge:true });
+
   loginOverlay.style.display="none";
   soundBtn.style.display="block";
-  player.textContent=user.displayName||"Guest-"+userId.slice(0,5);
+  player.textContent = username;
+
   await loadWallet();
   await loadCompetitions();
-  await loadFriends();
+
+  // FORCE refresh friends
+  setTimeout(loadFriends, 1000);
+
   await loadMyStreaks();
   await loadCapsules();
 }
@@ -171,7 +189,17 @@ bestBtn.onclick=async()=>{
 };
 
 /* UPLOAD */
-uploadBtn.onclick=()=>uploadInput.click();
+uploadBtn.onclick = () => {
+  if (diamonds < 1) {
+    showMessage("💎 You need at least 1 diamond to upload!");
+    return;
+  }
+  // Deduct 1 diamond
+  diamonds--;
+  updateWallet();
+
+  uploadInput.click();
+};
 
 uploadInput.onchange=async(e)=>{
   const files=[...e.target.files];
@@ -266,16 +294,31 @@ sendStreak.onclick=async()=>{
 };
 
 async function loadFriends(){
-  const snap=await db.collection("users").get();
-  friendSelect.innerHTML="";
+
+  console.log("Loading users...");
+
+  const snap = await db.collection("users").get();
+
+  friendSelect.innerHTML = "";
+
+  if(snap.empty){
+    console.log("NO USERS FOUND");
+    const o = document.createElement("option");
+    o.textContent = "No users found";
+    friendSelect.appendChild(o);
+    return;
+  }
+
   snap.forEach(d=>{
-    if(d.id!==userId){
-      const o=document.createElement("option");
-      o.value=d.id;
-      o.textContent=d.data().name||"Guest-"+d.id.slice(0,5);
+    if(d.id !== userId){
+      const o = document.createElement("option");
+      o.value = d.id;
+      o.textContent = d.data().name || ("Guest-"+d.id.slice(0,5));
       friendSelect.appendChild(o);
     }
   });
+
+  console.log("Users loaded:", friendSelect.children.length);
 }
 
 async function loadMyStreaks(){
